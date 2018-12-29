@@ -96,7 +96,7 @@ for(i in 1:nrow(vars)){
       s[,paste0(vars$name[i], "_temporal")] <- apply(cbind(s$year, 0, clim), 1, 
                                                           FUN=window_anomaly, start_year=1895, end_year=2017, lag=vars$months[[i]])
       
-      # long-term mean cliamte at each location
+      # long-term mean climate at each location
       means <- apply(clim, 1, FUN=window_mean, lag=vars$months[[i]])
       
       # spatial anomaly (species-specific)
@@ -104,6 +104,12 @@ for(i in 1:nrow(vars)){
             spi <- s$plant_genus_species==sp
             s[spi, paste0(vars$name[i], "_spatial")] <- means[spi] - mean(means[spi], na.rm=T)
       }
+      
+      # spatial variance within county during the average year -- a measure of uncertainty
+      clim <- readRDS(paste0("e:/vaccinium/data/derived/", vars$var[i], "_county_stdevs.rds"))
+      clim <- clim[match(s$OBJECTID, clim[,"zone"]), 2:ncol(clim)] ^ 2
+      s[spi, paste0(vars$name[i], "_spatial_variance")] <- apply(clim, 1, FUN=window_mean, lag=vars$months[[i]])
+      
 }
 
 # export results
