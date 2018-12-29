@@ -108,10 +108,11 @@ for(i in 1:nrow(vars)){
       # spatial variance within county during the average year -- a measure of uncertainty
       clim <- readRDS(paste0("e:/vaccinium/data/derived/", vars$var[i], "_county_stdevs.rds"))
       clim <- clim[match(s$OBJECTID, clim[,"zone"]), 2:ncol(clim)] ^ 2
-      s[spi, paste0(vars$name[i], "_spatial_variance")] <- apply(clim, 1, FUN=window_mean, lag=vars$months[[i]])
+      s[,paste0(vars$name[i], "_spatial_variance")] <- apply(clim, 1, FUN=window_mean, lag=vars$months[[i]])
       
 }
 
 # export results
 s <- select(s, -OBJECTID)
 write.csv(s, "e:/vaccinium/output/Blueberries_Meineke_anomalies.csv", row.names=F)
+
